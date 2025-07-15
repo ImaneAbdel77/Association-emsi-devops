@@ -30,7 +30,9 @@ gestion-association/
 ├── README.md             # Ce fichier
 
 ```
-> ⚠️ **Les fichiers Helm/manifestes Kubernetes sont stockés dans un dépôt séparé : [`assoc-manifests`](https://gitlab.com/ImaneAbdel77/assoc-manifests)**
+⚠️ Les fichiers Helm et manifestes Kubernetes doivent être placés dans un dossier séparé nommé assoc-manifests (idéalement dans un dépôt Git séparé). Ce dossier est utilisé par Argo CD pour surveiller et déployer automatiquement l'application sur le cluster AKS.
+
+
 
 ---
 
