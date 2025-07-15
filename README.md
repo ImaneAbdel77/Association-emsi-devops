@@ -21,9 +21,15 @@ Ce projet est une application Java Spring Boot pour la gestion d'associations, d
 
 ## 📂 Structure du projet
 
-<pre><code>```text gestion-association/ ├── .gitlab-ci.yml # Pipeline CI/CD GitLab ├── Dockerfile # Conteneurisation de l'app ├── src/ # Code source Spring Boot ├── target/ # .jar généré par Maven ├── README.md # Ce fichier ``` </code></pre>
+```text
+gestion-association/
+├── .gitlab-ci.yml        # Pipeline CI/CD GitLab
+├── Dockerfile            # Conteneurisation de l'app
+├── src/                  # Code source Spring Boot
+├── target/               # .jar généré par Maven
+├── README.md             # Ce fichier
 
-
+```
 > ⚠️ **Les fichiers Helm/manifestes Kubernetes sont stockés dans un dépôt séparé : [`assoc-manifests`](https://gitlab.com/ImaneAbdel77/assoc-manifests)**
 
 ---
