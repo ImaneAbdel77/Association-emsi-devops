@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galerie - Association EMSI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --main-green: #036112;
+            --hover-green: #006600;
+            --light-green: #e8f5e9;
+            --dark-green: #004d00;
+            --accent-gold: #ffd700;
+        }
+
+        /* Styles du header */
+        body {
+            background: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar-glass {
+            background: rgba(0, 128, 0, 0.7) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1) !important;
+            padding: 1rem 0 !important;
+            min-height: 70px;
+        }
+
+        .navbar-brand {
+            font-size: 1.7rem;
+            margin-right: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: #fff !important;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link {
+            color: #fff !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            font-size: 1.05rem;
+            margin: 0 0.25rem;
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            background: rgba(0, 102, 0, 0.5) !important;
+            transform: translateY(-2px);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: white;
+            bottom: 5px;
+            left: 1rem;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: calc(100% - 2rem);
+        }
+
+        .container {
+            max-width: 1500px;
+            padding: 0 2rem;
+        }
+
+        /* Nouveau haut de page stylé */
+        .page-header-improved {
+            background: var(--light-green);
+            padding: 3rem 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 128, 0, 0.2);
+            margin-bottom: 40px;
+        }
+
+        .page-header-improved h1 {
+            font-size: 2.75rem;
+            font-weight: 700;
+            color: var(--main-green);
+            margin-bottom: 1rem;
+        }
+
+        .page-header-improved p {
+            font-size: 1.25rem;
+            color: #6c757d;
+            margin-bottom: 2rem;
+        }
+
+        .btn-custom {
+            background-color: var(--main-green);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0, 100, 0, 0.1);
+        }
+
+        .btn-custom:hover {
+            background-color: var(--dark-green);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 100, 0, 0.2);
+            color: white;
+        }
+
+        /* Styles spécifiques pour la galerie */
+        .gallery-card {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            overflow: hidden;
+            margin-bottom: 2rem;
+            background: #dff3d8;
+            position: relative;
+        }
+
+        .gallery-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 100, 0, 0.15);
+        }
+
+        .gallery-image-container {
+            height: 200px;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-card:hover .gallery-image {
+            transform: scale(1.05);
+        }
+
+        .gallery-body {
+            padding: 1.8rem;
+        }
+
+        .gallery-title {
+            font-weight: 700;
+            color: var(--dark-green);
+            margin-bottom: 1.2rem;
+            font-size: 1.5rem;
+            line-height: 1.3;
+            letter-spacing: -0.2px;
+        }
+
+        .gallery-description {
+            color: #495057;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .gallery-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+
+        .btn-action {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-edit {
+            background-color: #ffc107;
+            color: #212529;
+            border: none;
+        }
+
+        .btn-edit:hover {
+            background-color: #e0a800;
+            color: #212529;
+            transform: translateY(-1px);
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+        }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .no-gallery {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            margin: 2rem 0;
+        }
+
+        .no-gallery-icon {
+            font-size: 4rem;
+            color: var(--main-green);
+            margin-bottom: 1.5rem;
+            opacity: 0.7;
+        }
+
+        /* Agrandir la carte */
+        .gallery-card-lg {
+            min-height: 350px;
+        }
+
+        .gallery-body-lg {
+            padding: 2rem;
+        }
+
+        .gallery-title-lg {
+            font-size: 1.7rem;
+        }
+
+        .gallery-description-lg {
+            -webkit-line-clamp: 5;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .page-header-improved h1 {
+                font-size: 2.2rem;
+            }
+            .page-header-improved p {
+                font-size: 1.1rem;
+            }
+            .gallery-title {
+                font-size: 1.3rem;
+            }
+            .gallery-card-lg {
+                min-height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header>
+    <nav class="navbar navbar-expand-lg navbar-glass fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">Association EMSI</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/index">Actualités</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" href="/admin/users">Utilisateurs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/posts">Publication</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/events">Événements</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/gallery">Galerie</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" href="/login">Connexion</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" href="/register">Inscription</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/logout">Déconnexion</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/Profile">Profile</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main id="main-content" style="padding-top: 90px;">
+    <!-- Nouveau haut de page -->
+    <section class="page-header-improved">
+        <div class="container">
+            <h1>Galerie</h1>
+            <p>Découvrez les moments capturés lors de nos activités.</p>
+            <div sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/gallery/create}" class="btn btn-custom">
+                    <i class="fas fa-plus me-2"></i>Ajouter une photo
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Liste des photos -->
+    <div class="container mb-5">
+        <div class="row" th:if="${not #lists.isEmpty(images)}">
+            <div class="col-md-6 col-lg-4 mb-4" th:each="image : ${images}">
+                <div class="gallery-card gallery-card-lg">
+                    <div class="gallery-image-container">
+                        <img th:src="@{${image.imagePath}}" class="gallery-image" alt="Photo de la galerie">
+                    </div>
+                    <div class="gallery-body gallery-body-lg">
+                        <h4 class="gallery-title gallery-title-lg" th:text="${image.title}"></h4>
+                        <p class="gallery-description gallery-description-lg" th:text="${image.description}"></p>
+                        <p class="text-muted">
+                            Ajouté le <span th:text="${#temporals.format(image.uploadedAt, 'dd/MM/yyyy')}"></span>
+                        </p>
+
+                        <!-- Boutons d'action pour l'administrateur -->
+                        <div class="gallery-actions" sec:authorize="hasRole('ADMIN')">
+                            <a th:href="@{'/gallery/edit/' + ${image.id}}" class="btn btn-action btn-edit">
+                                <i class="fas fa-edit me-1"></i> Modifier
+                            </a>
+                            <form th:action="@{'/gallery/delete/' + ${image.id}}" method="post" style="display: inline;">
+                                <button type="submit" class="btn btn-action btn-delete" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette image ?')">
+                                    <i class="fas fa-trash me-1"></i> Supprimer
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aucune photo -->
+        <div class="no-gallery" th:if="${#lists.isEmpty(images)}">
+            <div class="no-gallery-icon">
+                <i class="far fa-images"></i>
+            </div>
+            <h3 class="mb-3">Aucune photo disponible pour le moment</h3>
+            <p class="text-muted mb-4">Nous préparons de nouvelles photos. Revenez bientôt !</p>
+            <div sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/gallery/create}" class="btn btn-custom">
+                    <i class="fas fa-plus me-2"></i>Ajouter une photo
+                </a>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const header = document.querySelector(".navbar-glass");
+        const mainContent = document.getElementById("main-content");
+        if (header && mainContent) {
+            const headerHeight = header.offsetHeight;
+            mainContent.style.paddingTop = `${headerHeight + 20}px`;
+        }
+    });
+</script>
+<footer class="bg-dark text-white mt-5 py-4">
+    <div class="container text-center">
+        <p>© 2025 Association des Étudiants EMSI - Tous droits réservés</p>
+    </div>
+</footer>
+</body>
+</html>

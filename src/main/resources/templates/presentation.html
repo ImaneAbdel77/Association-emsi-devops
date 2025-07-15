@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Présentation - Association EMSI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --main-green: #008000;
+            --hover-green: #006600;
+            --light-green: #e8f5e9;
+            --dark-green: #004d00;
+            --accent-gold: #ffd700;
+        }
+
+        /* Styles du header */
+        body {
+            background: #f8f9fa;
+        }
+
+        .navbar-glass {
+            background: rgba(0, 128, 0, 0.7) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1) !important;
+            padding: 1rem 0 !important;
+            min-height: 70px;
+        }
+
+        .navbar-brand {
+            font-size: 1.7rem;
+            margin-right: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: #fff !important;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link {
+            color: #fff !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            font-size: 1.05rem;
+            margin: 0 0.25rem;
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            background: rgba(0, 102, 0, 0.5) !important;
+            transform: translateY(-2px);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: white;
+            bottom: 5px;
+            left: 1rem;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: calc(100% - 2rem);
+        }
+
+        .container {
+            max-width: 1500px;
+            padding: 0 2rem;
+        }
+
+        .navbar-nav {
+            align-items: center;
+        }
+
+        .navbar-nav.me-auto {
+            gap: 0.1rem;
+        }
+
+        .navbar-toggler {
+            border-color: rgba(255,255,255,0.6);
+            padding: 0.4rem;
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            width: 1.3em;
+            height: 1.3em;
+        }
+
+        @media (max-width: 992px) {
+            .navbar-glass {
+                padding: 0.7rem 0 !important;
+            }
+            .nav-link {
+                margin: 0.2rem 0;
+                padding: 0.6rem 1rem !important;
+            }
+            .navbar-brand {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Styles de la page */
+        .hero-section {
+            background-size: cover;
+            background: linear-gradient(rgba(0, 100, 0, 0.8), rgba(0, 80, 0, 0.8)), url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center;
+            color: white;
+            padding: 10rem 0 8rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: "";
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: white;
+            transform: skewY(-3deg);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            overflow: hidden;
+            margin: 3rem 0;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            transition: transform 0.3s;
+        }
+
+        .video-container:hover {
+            transform: scale(1.02);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 15px;
+        }
+
+        .feature-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            height: 100%;
+            border-top: 4px solid var(--main-green);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,100,0,0.15);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--main-green);
+            margin-bottom: 1rem;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1);
+        }
+
+        .testimonial-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .testimonial-card::before {
+            content: """";
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 5rem;
+            color: rgba(0, 100, 0, 0.05);
+            font-family: Georgia, serif;
+            line-height: 1;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,100,0,0.1);
+        }
+
+        .testimonial-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--main-green);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .stats-number {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--main-green);
+            position: relative;
+            display: inline-block;
+        }
+
+        .stats-number::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: var(--accent-gold);
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 3rem;
+        }
+
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--main-green);
+        }
+
+        .btn-custom {
+            background-color: var(--main-green);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,100,0,0.2);
+        }
+
+        .btn-custom:hover {
+            background-color: var(--dark-green);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,100,0,0.3);
+            color: white;
+        }
+
+        .bg-pattern {
+            background-color: #f8f9fa;
+            background-image: radial-gradient(circle, rgba(0,100,0,0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .floating-animation {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .highlight-text {
+            position: relative;
+            display: inline-block;
+            z-index: 1;
+        }
+
+        .highlight-text::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 15px;
+            background: rgba(0, 100, 0, 0.2);
+            z-index: -1;
+            transform: skewX(-15deg);
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-glass fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">Association EMSI</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/index">Actualités</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" href="/admin/users">Utilisateurs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/posts">Publication</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/events">Événements</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/gallery">Galerie</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" href="/login">Connexion</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" href="/register">Inscription</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/logout">Déconnexion</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/Profile">Profile</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main id="main-content" style="padding-top: 90px;">
+    <!-- Section Hero -->
+    <section class="hero-section">
+        <div class="hero-content container">
+            <h1 class="display-3 fw-bold mb-4">Association des Étudiants <span class="highlight-text">EMSI</span></h1>
+            <p class="lead mb-5 fs-4">Unis pour innover, inspirer et transformer l'avenir</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="#about" class="btn btn-light btn-lg px-4 me-2 btn-custom">Découvrir</a>
+                <a href="/register" class="btn btn-outline-light btn-lg px-4">Nous rejoindre</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section À propos -->
+    <section id="about" class="py-5 bg-pattern">
+        <div class="container py-5">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0 pe-lg-5">
+                    <h2 class="fw-bold mb-4 section-title">Qui sommes-nous ?</h2>
+                    <p class="lead fs-4 mb-4">L'Association des Étudiants de l'EMSI est une communauté dynamique qui œuvre pour l'épanouissement académique, professionnel et social de ses membres.</p>
+                    <p class="mb-4">Fondée en 2025, notre association rassemble plus de 100 membres actifs organisés en différentes commissions thématiques. Nous organisons des événements académiques, culturels et sportifs tout au long de l'année.</p>
+                    <div class="d-flex align-items-center mt-4">
+                        <i class="fas fa-check-circle text-success me-2 fs-4"></i>
+                        <span class="fw-medium">Engagement étudiant</span>
+                    </div>
+                    <div class="d-flex align-items-center mt-2">
+                        <i class="fas fa-check-circle text-success me-2 fs-4"></i>
+                        <span class="fw-medium">Développement professionnel</span>
+                    </div>
+                    <div class="d-flex align-items-center mt-2">
+                        <i class="fas fa-check-circle text-success me-2 fs-4"></i>
+                        <span class="fw-medium">Communauté inclusive</span>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="video-container shadow-lg">
+                        <!-- Remplacez par votre vidéo YouTube ou Vimeo -->
+                        <iframe src="https://www.youtube.com/embed/uZGzGvLli98" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Valeurs -->
+    <section class="py-5">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold section-title">Nos Valeurs Fondamentales</h2>
+                <p class="lead text-muted mx-auto" style="max-width: 700px;">Ces principes guident chacune de nos actions et décisions</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card card p-4 text-center">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="mb-3">Solidarité</h3>
+                        <p class="text-muted">Nous croyons en la force du collectif et de l'entraide entre étudiants pour surmonter tous les défis.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card card p-4 text-center">
+                        <div class="feature-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h3 class="mb-3">Innovation</h3>
+                        <p class="text-muted">Nous encourageons la créativité et les initiatives étudiantes pour construire l'avenir.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card card p-4 text-center">
+                        <div class="feature-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3 class="mb-3">Excellence</h3>
+                        <p class="text-muted">Nous visons l'excellence académique et professionnelle dans toutes nos activités.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Témoignages -->
+    <section class="py-5 bg-pattern">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold section-title">Ils parlent de nous</h2>
+                <p class="lead text-muted mx-auto" style="max-width: 700px;">Découvrez les expériences de nos membres et partenaires</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" class="testimonial-img me-3">
+                            <div>
+                                <h5 class="mb-0 fw-bold">Ali Benani</h5>
+                                <small class="text-muted">Membre </small>
+                            </div>
+                        </div>
+                        <p class="mb-0">"L'association m'a permis de développer mon leadership et de créer des liens forts avec des étudiants partageant les mêmes valeurs. Une expérience transformative!"</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="https://randomuser.me/api/portraits/men/45.jpg" class="testimonial-img me-3">
+                            <div>
+                                <h5 class="mb-0 fw-bold">Mehdi El Fassi</h5>
+                                <small class="text-muted">Membre actif</small>
+                            </div>
+                        </div>
+                        <p class="mb-0">"Grâce aux événements organisés, j'ai pu rencontrer des professionnels qui m'ont ouvert les portes de mon stage de fin d'études. Inestimable!"</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" class="testimonial-img me-3">
+                            <div>
+                                <h5 class="mb-0 fw-bold">Aya Toumi</h5>
+                                <small class="text-muted">Nouvelle membre</small>
+                            </div>
+                        </div>
+                        <p class="mb-0">"Dès mon intégration, j'ai été impressionnée par l'accueil chaleureux et les opportunités offertes par l'association. Je me sens déjà chez moi."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Statistiques -->
+    <section class="py-5">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold section-title">En Chiffres</h2>
+                <p class="lead text-muted mx-auto" style="max-width: 700px;">Notre impact à travers les années</p>
+            </div>
+            <div class="row text-center g-4">
+                <div class="col-md-3 col-6">
+                    <div class="stats-number">100+</div>
+                    <p class="fw-medium text-muted">Membres actifs</p>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stats-number">5+</div>
+                    <p class="fw-medium text-muted">Événements annuels</p>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stats-number">1</div>
+                    <p class="fw-medium text-muted">Ans d'existence</p>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stats-number">10+</div>
+                    <p class="fw-medium text-muted">Partenariats</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+<!--    <section class="py-5 bg-dark text-white">-->
+<!--        <div class="container py-5 text-center">-->
+<!--            <h2 class="fw-bold mb-4">Prêt à nous rejoindre ?</h2>-->
+<!--            <p class="lead mb-5 mx-auto" style="max-width: 600px;">Rejoignez notre communauté dynamique et profitez de toutes les opportunités que nous offrons à nos membres.</p>-->
+<!--            <a href="/register" class="btn btn-light btn-lg px-5 py-3 fw-bold">Devenir membre maintenant</a>-->
+<!--        </div>-->
+<!--    </section>-->
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const header = document.querySelector(".navbar-glass");
+        const mainContent = document.getElementById("main-content");
+
+        if (header && mainContent) {
+            const headerHeight = header.offsetHeight;
+            mainContent.style.paddingTop = `${headerHeight + 20}px`;
+        }
+
+        // Animation au défilement
+        const animateOnScroll = function() {
+            const elements = document.querySelectorAll('.feature-card, .testimonial-card, .stats-number');
+
+            elements.forEach(element => {
+                const elementPosition = element.getBoundingClientRect().top;
+                const screenPosition = window.innerHeight / 1.2;
+
+                if (elementPosition < screenPosition) {
+                    element.classList.add('animated');
+                }
+            });
+        };
+
+        window.addEventListener('scroll', animateOnScroll);
+        animateOnScroll(); // Exécuter une fois au chargement
+    });
+</script>
+<footer class="bg-dark text-white mt-5 py-4">
+    <div class="container text-center">
+        <p>© 2025 Association des Étudiants EMSI - Tous droits réservés</p>
+    </div>
+</footer>
+</body>
+</html>

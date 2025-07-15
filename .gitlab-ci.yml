@@ -1,0 +1,61 @@
+stages:
+  - build
+  - docker
+  - update_helm_chart
+
+variables:
+  APP_NAME: assoc-emsi
+  IMAGE_TAG: registry.gitlab.com/imaneabdel77-group/association-emsi-v2/$APP_NAME:$CI_COMMIT_SHORT_SHA
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: tcp://docker:2375/
+
+build_app:
+  image: maven:3.9.10-eclipse-temurin-17
+  stage: build
+  script:
+    - mvn clean package -DskipTests
+  artifacts:
+    paths:
+      - target/*.jar
+    expire_in: 1 hour
+
+build_and_push_image:
+  image: docker:24.0.7
+  stage: docker
+  services:
+    - name: docker:24.0.7-dind
+      alias: docker
+  dependencies:
+    - build_app
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker build -t "$IMAGE_TAG" .
+    - docker push "$IMAGE_TAG"
+  needs:
+    - build_app
+
+update_helm_chart:
+  stage: update_helm_chart
+  image: ubuntu:24.04
+  before_script:
+    - apt-get update -y && apt-get install -y openssh-client git
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H gitlab.com >> ~/.ssh/known_hosts
+    - git config --global user.email "gitlab-ci@gmail.com"
+    - git config --global user.name "gitlab-ci"
+    - eval "$(ssh-agent -s)"
+    - ssh-add ~/.ssh/id_rsa
+    - git clone git@gitlab.com:ImaneAbdel77/assoc-manifests.git
+    - cd assoc-manifests
+  script:
+    - sed -i "s|assoc-emsi:.*|assoc-emsi:${CI_COMMIT_SHORT_SHA}|g" assoc-app/values.yaml
+    - git add assoc-app/values.yaml
+    - |
+      if git diff --cached --quiet; then
+        echo "No changes to commit"
+      else
+        git commit -m "Update image tag to ${CI_COMMIT_SHORT_SHA}"
+        git push
+      fi

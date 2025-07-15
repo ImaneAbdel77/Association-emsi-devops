@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - EMSI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --main-green: #008000;
+            --hover-green: #006600;
+            --light-green: #e8f5e9;
+            --dark-green: #004d00;
+            --emsi-blue: #0056b3;
+            --emsi-gold: #FFD700;
+        }
+
+        body {
+            background:
+                    linear-gradient(rgba(0, 86, 179, 0.7), rgba(0, 128, 0, 0.7)),
+                    url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Styles du header */
+        .navbar-glass {
+            background: rgba(0, 128, 0, 0.7) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1) !important;
+            padding: 1rem 0 !important;
+            min-height: 70px;
+        }
+
+        .navbar-brand {
+            font-size: 1.7rem;
+            margin-right: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: #fff !important;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link {
+            color: #fff !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            font-size: 1.05rem;
+            margin: 0 0.25rem;
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            background: rgba(0, 102, 0, 0.5) !important;
+            transform: translateY(-2px);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: white;
+            bottom: 5px;
+            left: 1rem;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: calc(100% - 2rem);
+        }
+
+        .container {
+            max-width: 1500px;
+            padding: 0 2rem;
+        }
+
+        .navbar-nav {
+            align-items: center;
+        }
+
+        .navbar-nav.me-auto {
+            gap: 0.1rem;
+        }
+
+        .navbar-toggler {
+            border-color: rgba(255,255,255,0.6);
+            padding: 0.4rem;
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            width: 1.3em;
+            height: 1.3em;
+        }
+
+        @media (max-width: 992px) {
+            .navbar-glass {
+                padding: 0.7rem 0 !important;
+            }
+            .nav-link {
+                margin: 0.2rem 0;
+                padding: 0.6rem 1rem !important;
+            }
+            .navbar-brand {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Styles pour la page de connexion */
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 20px;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .login-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, var(--emsi-blue), var(--main-green));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://emsi.ma/wp-content/uploads/2022/03/logo-emsi-white.png') no-repeat center center;
+            background-size: 30%;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .login-body {
+            padding: 2rem;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s;
+            background-color: rgba(255,255,255,0.8);
+        }
+
+        .form-control:focus {
+            border-color: var(--main-green);
+            box-shadow: 0 0 0 0.25rem rgba(0, 128, 0, 0.1);
+            background-color: white;
+        }
+
+        .btn-emsi {
+            background: linear-gradient(135deg, var(--main-green), var(--emsi-blue));
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s;
+            color: white;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-emsi:hover {
+            background: linear-gradient(135deg, var(--hover-green), var(--emsi-blue));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            color: white;
+        }
+
+        .login-footer {
+            padding: 1.5rem;
+            text-align: center;
+            background: rgba(245, 245, 245, 0.8);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .forgot-link {
+            color: var(--emsi-blue);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .forgot-link:hover {
+            color: var(--dark-green);
+            text-decoration: none;
+        }
+
+        .register-link {
+            color: var(--main-green);
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .register-link:hover {
+            color: var(--emsi-blue);
+            text-decoration: none;
+        }
+
+        .input-group-text {
+            background-color: white;
+            border-right: none;
+            color: var(--emsi-blue);
+        }
+
+        .form-floating>.form-control {
+            border-left: none;
+        }
+
+        .university-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--emsi-gold);
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 576px) {
+            .login-container {
+                padding: 15px;
+            }
+            .login-header {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-glass fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">Association EMSI</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/index">Actualités</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" href="/admin/users">Utilisateurs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/posts">Publication</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/events">Événements</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/gallery">Galerie</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" href="/login">Connexion</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" href="/register">Inscription</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/logout">Déconnexion</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/Profile">Profile</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="university-badge">
+            <i class="fas fa-graduation-cap"></i> Université EMSI
+        </div>
+        <div class="login-header">
+            <h3>Portail Étudiant</h3>
+            <p class="mb-0">Accédez à votre espace personnel</p>
+        </div>
+        <div class="login-body">
+            <form th:action="@{/login}" method="post">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Adresse Email</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                        <input type="email" class="form-control" id="email" name="username" required placeholder="email@emsi.ma">
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="form-label">Mot de passe</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        <input type="password" class="form-control" id="password" name="password" required placeholder="••••••••">
+                    </div>
+                </div>
+                <div class="d-grid mb-3">
+                    <button type="submit" class="btn btn-emsi">
+                        <i class="fas fa-sign-in-alt me-2"></i> Se connecter
+                    </button>
+                </div>
+                <div class="text-center mb-2">
+                    <a href="#" class="forgot-link">
+                        <i class="fas fa-key me-1"></i> Mot de passe oublié ?
+                    </a>
+                </div>
+            </form>
+        </div>
+        <div class="login-footer">
+            <p class="mb-0">Nouveau sur EMSI ? <a th:href="@{/register}" class="register-link">
+                <i class="fas fa-user-plus me-1"></i> Créer un compte
+            </a></p>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const header = document.querySelector(".navbar-glass");
+        const loginContainer = document.querySelector(".login-container");
+
+        // Calculer la hauteur du header
+        const headerHeight = header.offsetHeight;
+
+        // Appliquer cette hauteur comme margin-top au conteneur de login
+        loginContainer.style.marginTop = `${headerHeight + 20}px`;
+    });
+</script>
+<footer class="bg-dark text-white mt-5 py-4">
+    <div class="container text-center">
+        <p>© 2025 Association des Étudiants EMSI - Tous droits réservés</p>
+    </div>
+</footer>
+</body>
+</html>

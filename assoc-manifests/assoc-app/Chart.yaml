@@ -1,0 +1,6 @@
+apiVersion: v2
+name: assoc-app
+description: Chart Helm pour déployer l’application Spring Boot Gestion Association
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord - Association EMSI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Styles du header (conservés inchangés) */
+        :root {
+            --main-green: #008000;
+            --hover-green: #006600;
+            --light-green: #e8f5e9;
+            --dark-green: #004d00;
+            --dashboard-bg: #f5f7fa;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --card-hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --primary-gradient: linear-gradient(135deg, #008000 0%, #00a000 100%);
+            --success-gradient: linear-gradient(135deg, #28a745 0%, #5cb85c 100%);
+            --info-gradient: linear-gradient(135deg, #17a2b8 0%, #5bc0de 100%);
+            --warning-gradient: linear-gradient(135deg, #ffc107 0%, #ffab00 100%);
+        }
+
+        body {
+            background-color: var(--dashboard-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar-glass {
+            background: rgba(0, 128, 0, 0.7) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1) !important;
+            padding: 1rem 0 !important;
+            min-height: 70px;
+        }
+
+        .navbar-brand {
+            font-size: 1.7rem;
+            margin-right: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: #fff !important;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link {
+            color: #fff !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            font-size: 1.05rem;
+            margin: 0 0.25rem;
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            background: rgba(0, 102, 0, 0.5) !important;
+            transform: translateY(-2px);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: white;
+            bottom: 5px;
+            left: 1rem;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: calc(100% - 2rem);
+        }
+
+        .container {
+            max-width: 1500px;
+            padding: 0 2rem;
+        }
+
+        .navbar-nav {
+            align-items: center;
+        }
+
+        .navbar-nav.me-auto {
+            gap: 0.1rem;
+        }
+
+        .navbar-toggler {
+            border-color: rgba(255,255,255,0.6);
+            padding: 0.4rem;
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            width: 1.3em;
+            height: 1.3em;
+        }
+
+        @media (max-width: 992px) {
+            .navbar-glass {
+                padding: 0.7rem 0 !important;
+            }
+            .nav-link {
+                margin: 0.2rem 0;
+                padding: 0.6rem 1rem !important;
+            }
+            .navbar-brand {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Nouveaux styles pour le dashboard */
+        #dashboard-content {
+            padding-top: 100px;
+            padding-bottom: 50px;
+        }
+
+        .dashboard-title {
+            color: #2d3748;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .dashboard-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--main-green);
+            border-radius: 2px;
+        }
+
+        .dashboard-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            margin-bottom: 25px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-hover-shadow);
+        }
+
+        .stat-card {
+            color: white;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+            z-index: -1;
+        }
+
+        .stat-card-primary {
+            background: var(--primary-gradient);
+        }
+
+        .stat-card-success {
+            background: var(--success-gradient);
+        }
+
+        .stat-card-info {
+            background: var(--info-gradient);
+        }
+
+        .stat-card-warning {
+            background: var(--warning-gradient);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            opacity: 0.3;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
+
+        .card-header {
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-bottom: none;
+            padding: 1.25rem 1.5rem;
+            background: transparent;
+        }
+
+        .stat-card .card-body {
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .btn-card {
+            background-color: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 50px;
+            padding: 0.5rem 1.25rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            color: white;
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-card:hover {
+            background-color: rgba(255,255,255,0.3);
+            color: white;
+            transform: translateY(-2px);
+            border-color: rgba(255,255,255,0.4);
+        }
+
+        .actions-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+
+        .section-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            margin-right: 10px;
+            color: var(--main-green);
+        }
+
+        .actions-grid {
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-align: center;
+            color: white;
+            box-shadow: var(--card-shadow);
+        }
+
+        .action-btn i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--card-hover-shadow);
+            text-decoration: none;
+            color: white;
+        }
+
+        .btn-create-post {
+            background: var(--primary-gradient);
+        }
+
+        .btn-create-event {
+            background: var(--success-gradient);
+        }
+
+        .btn-add-image {
+            background: var(--info-gradient);
+        }
+
+        .btn-manage-users {
+            background: var(--warning-gradient);
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            #dashboard-content {
+                padding-top: 80px;
+            }
+
+            .card-value {
+                font-size: 2rem;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Footer */
+        .dashboard-footer {
+            background: #2d3748;
+            color: white;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.7);
+            margin-left: 1.5rem;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-glass fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">Association EMSI</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/index">Actualités</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link active" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" href="/admin/users">Utilisateurs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/posts">Publication</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/events">Événements</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/gallery">Galerie</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" href="/login">Connexion</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" href="/register">Inscription</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/logout">Déconnexion</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/Profile">Profile</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main id="dashboard-content" class="container mt-4">
+    <h1 class="dashboard-title">
+        <i class="fas fa-tachometer-alt me-2"></i>Tableau de bord
+    </h1>
+
+    <div class="row">
+        <!-- Carte Publications -->
+        <div class="col-md-6 col-lg-3">
+            <div class="dashboard-card stat-card stat-card-primary animate-card" style="animation-delay: 0.1s">
+                <i class="far fa-newspaper card-icon"></i>
+                <div class="card-body">
+                    <div class="card-value" th:text="${#numbers.formatInteger(postsCount, 0)}">0</div>
+                    <div class="card-label">Publications</div>
+                    <a href="/posts" class="btn btn-card">
+                        <i class="fas fa-eye me-1"></i> Voir toutes
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carte Événements -->
+        <div class="col-md-6 col-lg-3">
+            <div class="dashboard-card stat-card stat-card-success animate-card" style="animation-delay: 0.2s">
+                <i class="far fa-calendar-alt card-icon"></i>
+                <div class="card-body">
+                    <div class="card-value" th:text="${#numbers.formatInteger(eventsCount, 0)}">0</div>
+                    <div class="card-label">Événements</div>
+                    <a href="/events" class="btn btn-card">
+                        <i class="fas fa-eye me-1"></i> Voir tous
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carte Galerie -->
+        <div class="col-md-6 col-lg-3">
+            <div class="dashboard-card stat-card stat-card-info animate-card" style="animation-delay: 0.3s">
+                <i class="far fa-images card-icon"></i>
+                <div class="card-body">
+                    <div class="card-value" th:text="${#numbers.formatInteger(imagesCount, 0)}">0</div>
+                    <div class="card-label">Images</div>
+                    <a href="/gallery" class="btn btn-card">
+                        <i class="fas fa-eye me-1"></i> Voir la galerie
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carte Utilisateurs -->
+        <div class="col-md-6 col-lg-3">
+            <div class="dashboard-card stat-card stat-card-warning animate-card" style="animation-delay: 0.4s">
+                <i class="fas fa-users card-icon"></i>
+                <div class="card-body">
+                    <div class="card-value" th:text="${#numbers.formatInteger(usersCount, 0)}">0</div>
+                    <div class="card-label">Member</div>
+                    <a href="/admin/users" class="btn btn-card">
+                        <i class="fas fa-eye me-1"></i> Gérer
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Actions rapides -->
+    <div class="actions-section mt-5 animate-card" style="animation-delay: 0.5s">
+        <div class="section-title">
+            <i class="fas fa-bolt"></i> Actions rapides
+        </div>
+        <div class="actions-grid">
+            <a href="/posts/create" class="action-btn btn-create-post">
+                <i class="fas fa-plus"></i> Créer une publication
+            </a>
+            <a href="/events/create" class="action-btn btn-create-event">
+                <i class="fas fa-plus"></i> Créer un événement
+            </a>
+            <a href="/gallery/create" class="action-btn btn-add-image">
+                <i class="fas fa-plus"></i> Ajouter une image
+            </a>
+            <a href="/admin/users/create" class="action-btn btn-manage-users">
+                <i class="fas fa-user-plus"></i> Ajouter un utilisateur
+            </a>
+        </div>
+    </div>
+
+    <!-- Section Statistiques récentes (optionnelle) -->
+    <div class="actions-section mt-4 animate-card" style="animation-delay: 0.6s">
+        <div class="section-title">
+            <i class="fas fa-chart-line"></i> Activité récente
+        </div>
+        <div class="p-4 text-center">
+            <p class="text-muted">Des graphiques et statistiques pourraient être ajoutés ici</p>
+            <a href="#" class="btn btn-outline-primary">
+                <i class="fas fa-chart-pie me-2"></i>Voir les statistiques détaillées
+            </a>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Ajustement de l'espacement
+        const header = document.querySelector(".navbar-glass");
+        const mainContent = document.getElementById("dashboard-content");
+
+        if (header && mainContent) {
+            const headerHeight = header.offsetHeight;
+            mainContent.style.paddingTop = `${headerHeight + 20}px`;
+        }
+
+        // Animation des éléments
+        const animateElements = document.querySelectorAll('.animate-card');
+        animateElements.forEach((el, index) => {
+            el.style.opacity = '0';
+        });
+
+        // Délai pour permettre le rendu initial
+        setTimeout(() => {
+            animateElements.forEach((el, index) => {
+                const delay = parseFloat(el.style.animationDelay || '0.1s');
+                el.style.animationDelay = `${delay + (index * 0.05)}s`;
+                el.style.opacity = '1';
+            });
+        }, 100);
+    });
+</script>
+
+<footer class="dashboard-footer">
+    <div class="container footer-content">
+        <div class="copyright">
+            © 2025 Association des Étudiants EMSI - Tous droits réservés
+        </div>
+        <div class="footer-links">
+            <a href="#"><i class="fas fa-question-circle"></i> Aide</a>
+            <a href="#"><i class="fas fa-cog"></i> Paramètres</a>
+            <a href="#"><i class="fas fa-envelope"></i> Contact</a>
+        </div>
+    </div>
+</footer>
+</body>
+</html>
