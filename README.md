@@ -105,31 +105,31 @@ SSH_PRIVATE_KEY (accès au repo assoc-manifests)
 ## 🎨 UI/UX – Interfaces Utilisateur
 L'application Gestion Association propose plusieurs interfaces organisées pour une navigation fluide et intuitive :
 
-📝 Register Form
+## 📝 Register Form
 ![Aperçu du dashboard](image/P1.png)
 
-👤 Login Form
+## 👤 Login Form
 ![Aperçu du dashboard](image/P2.png)
 
-👨‍💼 Interfaces Administrateur
+## 👨‍💼 Interfaces Administrateur
 ![Aperçu du dashboard](image/P3.png)
 
-💡 Gestion des utilisateurs
+## 💡 Gestion des utilisateurs
 ![Aperçu du dashboard](image/P4.png)
 
-📊 Gestion des publications
+## 📊 Gestion des publications
 ![Aperçu du dashboard](image/P5.png)
 
-📅 Gestion des événements
+## 📅 Gestion des événements
 ![Aperçu du dashboard](image/P6.png)
 
-📁 Gestion de Galerie
+## 📁 Gestion de Galerie
 ![Aperçu du dashboard](image/P7.png)
 
-🖼️ Interface d’actualité
+## 🖼️ Interface d’actualité
 ![Aperçu du dashboard](image/P8.png)
 
-👨‍💼 Profile d’admin
+## 👨‍💼 Profile d’admin
 ![Aperçu du dashboard](image/P9.png)
 
 
