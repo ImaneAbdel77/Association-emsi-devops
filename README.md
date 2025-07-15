@@ -85,7 +85,8 @@ env:
 
 ## 🚀 Pour utiliser ce projet
 -Cloner ce dépôt :
-git clone https://gitlab.com/imaneabdel/association-emsi-v2.git
+git clone [https://gitlab.com/imaneabdel/association-emsi-v2.git](https://github.com/ImaneAbdel77/Association-emsi-devops.git) 
+
 cd association-emsi-v2
 
 -Compiler localement :
