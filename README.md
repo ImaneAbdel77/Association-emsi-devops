@@ -99,3 +99,9 @@ SSH_PRIVATE_KEY (accès au repo assoc-manifests)
 -Le pipeline se déclenche automatiquement après chaque push.
 
 -Argo CD se charge de la synchronisation automatique avec AKS.
+
+
+
+## 🎨 UI/UX – Interfaces Utilisateur
+L'application Gestion Association propose plusieurs interfaces organisées pour une navigation fluide et intuitive :
+
