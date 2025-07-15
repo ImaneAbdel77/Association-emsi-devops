@@ -71,8 +71,6 @@ Argo CD est connecté au dépôt assoc-manifests.
 Les variables d'environnement sensibles (URL, utilisateur, mot de passe) sont injectées dans le pod via des Secrets Kubernetes définis dans le dépôt assoc-manifests :
 
 yaml
-Copier
-Modifier
 env:
   - name: SPRING_DATASOURCE_URL
     valueFrom:
