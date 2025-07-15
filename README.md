@@ -133,6 +133,7 @@ L'application Gestion Association propose plusieurs interfaces organisées pour 
 ![Aperçu du dashboard](image/P9.png)
 
 
-## Developed By:
-Imane Abdelkhalk 
-Hamza Hdidou
+
+## 👨‍💻 Développé par
+- **Imane Abdelkhalk**
+- **Hamza Hdidou**
