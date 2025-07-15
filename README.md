@@ -70,7 +70,7 @@ Argo CD est connecté au dépôt assoc-manifests.
 ## 🔐 Connexion à la base de données Azure PostgreSQL
 Les variables d'environnement sensibles (URL, utilisateur, mot de passe) sont injectées dans le pod via des Secrets Kubernetes définis dans le dépôt assoc-manifests :
 
-yaml
+```yaml
 env:
   - name: SPRING_DATASOURCE_URL
     valueFrom:
@@ -78,7 +78,7 @@ env:
         name: azure-postgres-secret
         key: SPRING_DATASOURCE_URL
 
-
+```
 
 
 ## 🚀 Pour utiliser ce projet
