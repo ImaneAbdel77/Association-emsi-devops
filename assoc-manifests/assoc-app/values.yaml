@@ -3,7 +3,7 @@ replicaCount: 3
 image:
   repository: registry.gitlab.com/imaneabdel77-group/association-emsi-v2
   pullPolicy: IfNotPresent
-  tag: latest
+  tag: tag: "{{ .Values.image.tag }}"  # eviter d'utiliser latest dans la prod
 
 imagePullSecrets: []
 
@@ -22,11 +22,11 @@ podSecurityContext: {}
 securityContext: {}
 
 service:
-  type: NodePort
+  type: NodePort    # si tu utilise un env de prod ou staging tu peux utiliser LoadBalancer , mtn j utilise NodePort car il est gratuit
   port: 80
 
 ingress:
-  enabled: false
+  enabled: false # Pas d'Ingress configuré
   className: ""
   annotations: {}
   hosts:
@@ -39,7 +39,7 @@ ingress:
 resources: {}
 
 autoscaling:
-  enabled: false
+  enabled: false  # Pas d'HPA
   minReplicas: 1
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
