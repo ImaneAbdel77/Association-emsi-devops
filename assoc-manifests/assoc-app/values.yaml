@@ -1,7 +1,7 @@
 replicaCount: 3
 
 image:
-  repository: registry.gitlab.com/imaneabdel77-group/association-emsi-v2
+  repository: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
   pullPolicy: IfNotPresent
   tag: latest  # eviter d'utiliser latest dans la prod mais plutot tag: "{{ .Values.image.tag }}" 
 
